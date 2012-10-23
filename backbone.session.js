@@ -7,7 +7,7 @@
 if(typeof APP == "undefined"){ var APP = { }; }
  
 APP.Session = Backbone.Model.extend({
-	url: "/access", 
+	url: "/session", 
 	localStorage: new Store("session"),
 	defaults: {
 		id: 1, // this will make the access account unique on subsequent visits
