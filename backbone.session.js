@@ -1,12 +1,14 @@
-// **Access** 
+// **Session** 
 // _Backbone Model to save User Credentials locally using localStorage_
 // (Using the localStorage adapter for Backbone by Jerome Gravel-Niquet)
 // Example: 
-//   this.access = new Access();
-// 
-Access = Backbone.Model.extend({
+//   this.session = new APP.Session();
+//
+if(typeof APP == "undefined"){ var APP = { }; }
+ 
+APP.Session = Backbone.Model.extend({
 	url: "/access", 
-	localStorage: new Store("access"),
+	localStorage: new Store("session"),
 	defaults: {
 		id: 1, // this will make the access account unique on subsequent visits
 		local: false,
