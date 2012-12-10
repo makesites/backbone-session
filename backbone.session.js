@@ -11,9 +11,11 @@ APP.Session = Backbone.Model.extend({
 	//localStorage: new Store("session"),
 	defaults: {
 		id: 1, // this will make the access account unique on subsequent visits
-		local: false,
+		local: false
 	},
-	initialize: function( data ){
+	initialize: function( model, options ){
+		// setting up custom domain for session
+		if( !_.isUndefined(options.url) ) this.url = options.url;
 		this.fetch();
 		
 		//this.bind("change",this.cache);
