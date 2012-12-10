@@ -8,7 +8,7 @@ if(typeof APP == "undefined"){ var APP = { }; }
  
 APP.Session = Backbone.Model.extend({
 	url: "/session", 
-	localStorage: new Store("session"),
+	//localStorage: new Store("session"),
 	defaults: {
 		id: 1, // this will make the access account unique on subsequent visits
 		local: false,
@@ -16,13 +16,14 @@ APP.Session = Backbone.Model.extend({
 	initialize: function( data ){
 		this.fetch();
 		
-		this.bind("change",this.cache);
+		//this.bind("change",this.cache);
 		this.bind("error", this.error);
 	}, 
 	parse: function( data ) {
 		
 		// create the components collection
 		if ( _.isEmpty( data ) ){
+			/*
 			//get the latest version from localStorage
 			if( _.isNull( this.localStorage.find( this ) ) ){ 
 				// redirect the user to register
@@ -30,13 +31,14 @@ APP.Session = Backbone.Model.extend({
 				data = this.localStorage.find( this );
 				this.set({local: true});
 			}
-		
+			*/
 		}
 		
 		return data;
 		
 	}, 
 	cache: function(){
+		/*
 		// either save or update
 		if( _.isNull( this.localStorage.find( this ) ) ){ 
 			this.localStorage.create( this );
@@ -47,9 +49,10 @@ APP.Session = Backbone.Model.extend({
 		if( this.get("local") ){
 			this.save( this.toJSON() );
 		}
+		*/
 	}, 
 	// if data request fails request offline mode. 
 	error: function( model, req, options, error ){
 		console.log( req );
-	},  
+	} 
 });
