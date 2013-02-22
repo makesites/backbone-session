@@ -28,9 +28,9 @@ app.session.get("user");
 
 ## Options
 
-* _local_: Boolean, defining if the session will be saved locally
-* _remote_: Boolean, defining if a remote service will be called
-* _persist_: Boolean, using localStorage instead of sessionStorage (where available) 
+* __local__: Boolean, defining if the session will be saved locally
+* __remote__: Boolean, defining if a remote service will be called
+* __persist__: Boolean, using localStorage instead of sessionStorage (where available) 
 
 
 ## Conventions
