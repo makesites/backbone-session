@@ -14,8 +14,17 @@ APP.Session = Backbone.Model.extend({
 		local: false
 	},
 	initialize: function( model, options ){
+		// pick a persistance solution 
+		if(typeof localStorage != "undefined" && localStorage !== null){
+			// choose localStorage
+			this.store = this.localStorage;
+		} else {
+			// otherwise we need to store data in a cookie
+			this.store = this.cookie;
+		}
+
 		// setting up custom domain for session
-		if( !_.isUndefined(options.url) ) this.url = options.url;
+		//if( !_.isUndefined(options.url) ) this.url = options.url;
 		this.fetch();
 		
 		//this.bind("change",this.cache);
@@ -56,5 +65,44 @@ APP.Session = Backbone.Model.extend({
 	// if data request fails request offline mode. 
 	error: function( model, req, options, error ){
 		console.log( req );
-	} 
+	},
+	localStorage : {
+		get : function(name) {
+		},
+		set : function( name, val ){
+		}, 
+		check : function( name ){
+		}
+	}, 
+	cookie : {
+		get : function( name ) {
+			var i,key,value,cookies=document.cookie.split(";");
+			for (i=0;i<cookies.length;i++){
+				key=cookies[i].substr(0,cookies[i].indexOf("="));
+				value=cookies[i].substr(cookies[i].indexOf("=")+1);
+				key=key.replace(/^\s+|\s+$/g,"");
+				if (key==name){
+					return unescape(value);
+				}
+			}
+		}, 
+		
+		set : function( name, val ){
+			// automatically expire session in a day
+			var expiry = 86400000;
+			var date = new Date( ( new Date() ).getTime() + parseInt(expiry) );
+			var value=escape(val) + ((expiry==null) ? "" : "; expires="+date.toUTCString());
+			document.cookie=name + "=" + value;
+		}, 
+		
+		check : function( name ){
+			var cookie=this.get( name );
+			if (cookie!=null && cookie!=""){
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+	}
 });
