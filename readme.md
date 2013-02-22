@@ -1,6 +1,7 @@
 ##Backbone Session
 
-Backbone Model to save User Credentials locally using localStorage
+A uniform approach to session control for backbon.js apps. 
+
 
 ## Install 
 
@@ -8,6 +9,15 @@ Using Bower:
 ```
 bower install backbone.session
 ```
+
+
+## Conventions
+
+There are a few things the plugin takes for granted and it's good to note: 
+
+* Prefered api URL is "/session" (on the same domain)
+* Prefered store is localStorage
+
 
 ## Credits
 
