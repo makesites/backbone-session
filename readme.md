@@ -17,10 +17,7 @@ To load a new session, simply instantiate APP.Session :
 ```
 app.session = new APP.Session();
 ```
-
-If a remote is defined it will immediately be requested with a ```fetch()``` 
-
-Results will be saved locally and used for subsequent requests to the server. 
+If a remote is defined it will immediately be requested with a ```fetch()```. Results will be saved locally and used for subsequent requests to the server. 
 
 Get info from the session like in any other Backbone Model: 
 ```
@@ -28,6 +25,13 @@ app.session.get("user");
 ...
 
 ```
+
+## Options
+
+* _local_: Boolean, defining if the session will be saved locally
+* _remote_: Boolean, defining if a remote service will be called
+* _persist_: Boolean, using localStorage instead of sessionStorage (where available) 
+
 
 ## Conventions
 
