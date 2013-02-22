@@ -15,7 +15,10 @@ APP.Session = Backbone.Model.extend({
 	},
 	initialize: function( model, options ){
 		// pick a persistance solution 
-		if(typeof localStorage != "undefined" && localStorage !== null){
+		if(typeof sessionStorage != "undefined" && sessionStorage !== null){
+			// choose localStorage
+			this.store = this.sessionStorage;
+		} else if(typeof localStorage != "undefined" && localStorage !== null){
 			// choose localStorage
 			this.store = this.localStorage;
 		} else {
@@ -66,12 +69,36 @@ APP.Session = Backbone.Model.extend({
 	error: function( model, req, options, error ){
 		console.log( req );
 	},
-	localStorage : {
-		get : function(name) {
+	sessionStorage : {
+		get : function( name ) {
+			return sessionStorage.getItem( name );
 		},
 		set : function( name, val ){
+			// validation first?
+			return sessionStorage.setItem( name, val );
 		}, 
 		check : function( name ){
+			return ( sessionStorage.getItem( name ) == null );
+		},
+		clear: function( name ){
+			// actually just removing the session...
+			return sessionStorage.removeItem( name );
+		}
+	}, 
+	localStorage : {
+		get : function( name ) {
+			return localStorage.getItem( name );
+		},
+		set : function( name, val ){
+			// validation first?
+			return localStorage.setItem( name, val );
+		}, 
+		check : function( name ){
+			return ( localStorage.getItem( name ) == null );
+		},
+		clear: function( name ){
+			// actually just removing the session...
+			return localStorage.removeItem( name );
 		}
 	}, 
 	cookie : {
