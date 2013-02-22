@@ -10,6 +10,7 @@ Using Bower:
 bower install backbone.session
 ```
 
+
 ## Usage
 
 To load a new session, simply instantiate APP.Session : 
@@ -34,7 +35,7 @@ There are a few things the plugin takes for granted and is good to note:
 
 * In the examples we're assuming there is an app in the global namespace. 
 * Prefered api URL is "/session" (on the same domain) 
-* Prefered store is localStorage 
+* The session is stored preferably in sessionStorage unless the ```persist :  true``` in which case localStorage is used.
 * If the remote has no session an attempt will be made for the local info to be passed to the remote service. 
 
 
