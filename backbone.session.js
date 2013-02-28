@@ -18,9 +18,8 @@ APP.Session = Backbone.Model.extend({
 		persist: false 
 	},
 	initialize: function( model, options ){
-		console.log("options", this.options);
-		// fallbacks
-		if( typeof options == "undefined" ) options = {};
+		// default vars
+		options = options || {};
 		// pick a persistance solution 
 		if( !this.get("persist") && typeof sessionStorage != "undefined" && sessionStorage !== null ){
 			// choose localStorage
@@ -32,75 +31,67 @@ APP.Session = Backbone.Model.extend({
 			// otherwise we need to store data in a cookie
 			this.store = this.cookie;
 		}
-		// load local
-		try {
-			this.set( JSON.parse( this.store.get("session") ) );
-		} catch ( exc ){
-			// exception
-		}
 		// parse options
 		if( !_.isUndefined(options.url) ) this.url = options.url;
 		
-		// calling remote domain for session
-		if( this.options["remote"] ) this.fetch();
+        // try updating the session
+		// - locally
+		//loaded
+		var localSession = this.store.get("session");
+		if( _.isNull(localSession) ){
+			// - no valid local session, try the server
+			this.fetch();
+		} else {
+			this.set( JSON.parse( localSession ) );
+		}
 		
-		//this.bind("change",this.cache);
+        // event binders
+		this.bind("change",this.cache);
 		this.bind("error", this.error);
 	}, 
-	/*
-	sync: function(method, model, options) {
-		if(typeof options == "undefined") options = {};
-		// intercept local store actions
-		switch(method){
-			case "read":
-				model.parse( JSON.parse( this.store.get("session") ) );
-			break;
-			case "save":
-				this.store.set("session", model.toJSON() );
-			break;
-		}
-		// end now if there's no remote
-		if( !this.get("remote") ){
-			// work locally
-			return;
-		}
-		
-		options.success = function( model, resp, options ){
-			console.log("SUCCESSS!", method );
-		};
-		
-		return Backbone.sync.call(this, method, model, options);
-	}, 
-	*/
+	
 	parse: function( data ) {
-		
+		if( _.isNull(data) ) return;
+        //console.log("data", data);
 		// add updated flag
 		if( typeof data.updated == "undefined" ){
 			data.updated = ( new Date() ).getTime();
 		}
-		// cache locally
-		this.store.set("session", JSON.stringify( data ) );
-		
+		// set a trigger
+		if( !this.get("updated") ) this.trigger("loaded");
 		return data;
-		
 	}, 
+	
+	sync: function(method, model, options) {
+		// fallbacks
+		options = options || {};
+		//console.log("method", method);
+		// intercept local store actions
+		switch(method){
+			case "read":
+				
+			break;
+			case "update":
+				//this.store.set("session", JSON.stringify( model.toJSON() ) );
+			break;
+		}
+		// exit if explicitly noted as not calling a remote
+		if( !this.options["remote"] ) return;
+		
+		return Backbone.sync.call(this, method, model, options);
+	}, 
+	// caching is triggered after every model update (fetch/set)
 	cache: function(){
-		/*
-		// either save or update
-		if( _.isNull( this.localStorage.find( this ) ) ){ 
-			this.localStorage.create( this );
-		} else { 
-			this.localStorage.update( this );
-		}
-		// save state back to the server
-		if( this.get("local") ){
-			this.save( this.toJSON() );
-		}
-		*/
+		console.log("CACHE!!!!", this.toJSON());
+		// update the local session
+		this.store.set("session", JSON.stringify( this.toJSON() ) );
+		// check if the object has changed locally
+		console.log("changed", this.changed );
+		
 	}, 
 	// if data request fails request offline mode. 
 	error: function( model, req, options, error ){
-		console.log( error );
+		console.log( req );
 	},
 	sessionStorage : {
 		get : function( name ) {
