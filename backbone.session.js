@@ -24,7 +24,7 @@ APP.Session = Backbone.Model.extend({
 		if( !this.get("persist") && typeof sessionStorage != "undefined" && sessionStorage !== null ){
 			// choose localStorage
 			this.store = this.sessionStorage;
-		} else if( typeof localStorage != "undefined" && localStorage !== null ){
+		} else if( this.get("persist") && typeof localStorage != "undefined" && localStorage !== null ){
 			// choose localStorage
 			this.store = this.localStorage;
 		} else {
@@ -82,11 +82,11 @@ APP.Session = Backbone.Model.extend({
 	}, 
 	// caching is triggered after every model update (fetch/set)
 	cache: function(){
-		console.log("CACHE!!!!", this.toJSON());
+		//console.log("CACHE!!!!", this.toJSON());
 		// update the local session
 		this.store.set("session", JSON.stringify( this.toJSON() ) );
 		// check if the object has changed locally
-		console.log("changed", this.changed );
+		//console.log("changed", this.changed );
 		
 	}, 
 	// if data request fails request offline mode. 
