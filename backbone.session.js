@@ -5,9 +5,9 @@
 //   this.session = new APP.Session();
 //
 if(typeof APP == "undefined"){ var APP = { }; }
- 
+
 APP.Session = Backbone.Model.extend({
-	url: "/session", 
+	url: function(){ return this.options.host + "/session" }, 
 	defaults : {
 		auth: false,
 		updated: false
@@ -15,11 +15,17 @@ APP.Session = Backbone.Model.extend({
 	options: {
 		local: true, 
 		remote: true,
-		persist: false 
+		persist: false, 
+		host: ""
 	},
 	initialize: function( model, options ){
 		// default vars
 		options = options || {};
+		// parse options
+		this.options = _.extend(this.options, options);
+		// replace the whole URL if supplied
+		if( !_.isUndefined(options.url) ) this.url = options.url;
+		
 		// pick a persistance solution 
 		if( !this.get("persist") && typeof sessionStorage != "undefined" && sessionStorage !== null ){
 			// choose localStorage
@@ -31,18 +37,19 @@ APP.Session = Backbone.Model.extend({
 			// otherwise we need to store data in a cookie
 			this.store = this.cookie;
 		}
-		// parse options
-		if( !_.isUndefined(options.url) ) this.url = options.url;
 		
-        // try updating the session
-		// - locally
-		//loaded
+		// try loading the session
 		var localSession = this.store.get("session");
+		// 
 		if( _.isNull(localSession) ){
 			// - no valid local session, try the server
 			this.fetch();
 		} else {
 			this.set( JSON.parse( localSession ) );
+			// reset the updated flag
+			this.set({ updated : false });
+			// sync with the server
+			this.save();
 		}
 		
         // event binders
@@ -51,6 +58,7 @@ APP.Session = Backbone.Model.extend({
 	}, 
 	
 	parse: function( data ) {
+		// if there is no response, keep what we've got locally
 		if( _.isNull(data) ) return;
         //console.log("data", data);
 		// add updated flag
@@ -91,6 +99,7 @@ APP.Session = Backbone.Model.extend({
 	}, 
 	// if data request fails request offline mode. 
 	error: function( model, req, options, error ){
+		// consider redirecting based on statusCode
 		console.log( req );
 	},
 	sessionStorage : {
