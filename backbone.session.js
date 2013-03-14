@@ -12,6 +12,7 @@ APP.Session = Backbone.Model.extend({
 		auth: false,
 		updated: false
 	}, 
+	state: false, 
 	options: {
 		local: true, 
 		remote: true,
@@ -19,6 +20,7 @@ APP.Session = Backbone.Model.extend({
 		host: ""
 	},
 	initialize: function( model, options ){
+		_.bindAll(this);
 		// default vars
 		options = options || {};
 		// parse options
@@ -27,10 +29,10 @@ APP.Session = Backbone.Model.extend({
 		if( !_.isUndefined(options.url) ) this.url = options.url;
 		
 		// pick a persistance solution 
-		if( !this.get("persist") && typeof sessionStorage != "undefined" && sessionStorage !== null ){
+		if( !this.options.persist && typeof sessionStorage != "undefined" && sessionStorage !== null ){
 			// choose localStorage
 			this.store = this.sessionStorage;
-		} else if( this.get("persist") && typeof localStorage != "undefined" && localStorage !== null ){
+		} else if( this.options.persist && typeof localStorage != "undefined" && localStorage !== null ){
 			// choose localStorage
 			this.store = this.localStorage;
 		} else {
@@ -53,20 +55,18 @@ APP.Session = Backbone.Model.extend({
 		}
 		
         // event binders
-		this.bind("change",this.cache);
+		this.bind("change",this.update);
 		this.bind("error", this.error);
 	}, 
 	
 	parse: function( data ) {
+		console.log("data", data);
 		// if there is no response, keep what we've got locally
 		if( _.isNull(data) ) return;
-        //console.log("data", data);
-		// add updated flag
+        // add updated flag
 		if( typeof data.updated == "undefined" ){
 			data.updated = ( new Date() ).getTime();
 		}
-		// set a trigger
-		if( !this.get("updated") ) this.trigger("loaded");
 		return data;
 	}, 
 	
@@ -84,18 +84,27 @@ APP.Session = Backbone.Model.extend({
 			break;
 		}
 		// exit if explicitly noted as not calling a remote
-		if( !this.options["remote"] ) return;
+		if( !this.options["remote"] ) return this.update();
 		
 		return Backbone.sync.call(this, method, model, options);
 	}, 
-	// caching is triggered after every model update (fetch/set)
+	update: function(){
+		// set a trigger
+		if( !this.state ) {
+			this.state = true;
+			this.trigger("loaded");
+		};
+		// caching is triggered after every model update (fetch/set)
+		if( this.get("updated") ){
+			this.cache();
+		}
+	}, 
 	cache: function(){
-		//console.log("CACHE!!!!", this.toJSON());
+		console.log("CACHE!!!!", this.toJSON());
 		// update the local session
 		this.store.set("session", JSON.stringify( this.toJSON() ) );
 		// check if the object has changed locally
-		//console.log("changed", this.changed );
-		
+		//...
 	}, 
 	// if data request fails request offline mode. 
 	error: function( model, req, options, error ){
