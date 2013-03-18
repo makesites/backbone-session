@@ -108,6 +108,22 @@ APP.Session = Backbone.Model.extend({
 		// check if the object has changed locally
 		//...
 	}, 
+	// Destroy session - Source: http://backbonetutorials.com/cross-domain-sessions/
+	logout: function() {
+      // Do a DELETE to /session and clear the clientside data
+      var that = this;
+      this.destroy({
+        success: function (model, resp) {
+          model.clear()
+          model.id = null;
+          // Set auth to false to trigger a change:auth event
+          // The server also returns a new csrf token so that
+          // the user can relogin without refreshing the page
+          that.set({auth: false, _csrf: resp._csrf});
+          
+        }
+      });      
+    },
 	// if data request fails request offline mode. 
 	error: function( model, req, options, error ){
 		// consider redirecting based on statusCode
