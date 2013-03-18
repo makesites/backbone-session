@@ -1,10 +1,12 @@
 // **Session** 
-// _Backbone Model to save User Credentials locally using localStorage_
-// (Using the localStorage adapter for Backbone by Jerome Gravel-Niquet)
-// Example: 
+// _Backbone Model to save/retrieve User Credentials locally_
+// 
+// Usage: 
 //   this.session = new APP.Session();
-//
-if(typeof APP == "undefined"){ var APP = { }; }
+
+(function(window) {
+
+if(typeof window.APP == "undefined"){ var APP = { }; }
 
 APP.Session = Backbone.Model.extend({
 	url: function(){ return this.options.host + "/session" }, 
@@ -175,3 +177,5 @@ APP.Session = Backbone.Model.extend({
 		
 	}
 });
+
+})(window);
