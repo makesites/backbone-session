@@ -1,24 +1,28 @@
-// **Session** 
-// _Backbone Model to save/retrieve User Credentials locally_
-// 
-// Usage: 
-//   this.session = new APP.Session();
+/* **Session**
+ * _Uniform session support for Backbone.js apps_
+ *
+ * Created by Makis Tracend ( @tracend )
+ * Source: https://github.com/makesites/backbone-session
+ *
+ * Usage:
+ *   this.session = new APP.Session();
+ */
 
 (function(window) {
 
-if(typeof window.APP == "undefined"){ var APP = { }; }
+var APP = (typeof window.APP == "undefined") ? {} : window.APP;
 
 APP.Session = Backbone.Model.extend({
-	url: function(){ return this.options.host + "/session" }, 
+	url: function(){ return this.options.host + "/session" },
 	defaults : {
 		auth: false,
 		updated: false
-	}, 
-	state: false, 
+	},
+	state: false,
 	options: {
-		local: true, 
+		local: true,
 		remote: true,
-		persist: false, 
+		persist: false,
 		host: ""
 	},
 	initialize: function( model, options ){
@@ -29,8 +33,8 @@ APP.Session = Backbone.Model.extend({
 		this.options = _.extend(this.options, options);
 		// replace the whole URL if supplied
 		if( !_.isUndefined(options.url) ) this.url = options.url;
-		
-		// pick a persistance solution 
+
+		// pick a persistance solution
 		if( !this.options.persist && typeof sessionStorage != "undefined" && sessionStorage !== null ){
 			// choose localStorage
 			this.store = this.sessionStorage;
@@ -41,10 +45,10 @@ APP.Session = Backbone.Model.extend({
 			// otherwise we need to store data in a cookie
 			this.store = this.cookie;
 		}
-		
+
 		// try loading the session
 		var localSession = this.store.get("session");
-		// 
+		//
 		if( _.isNull(localSession) ){
 			// - no valid local session, try the server
 			this.fetch();
@@ -55,23 +59,22 @@ APP.Session = Backbone.Model.extend({
 			// sync with the server
 			this.save();
 		}
-		
-        // event binders
+
+		// event binders
 		this.bind("change",this.update);
 		this.bind("error", this.error);
-	}, 
-	
+	},
+
 	parse: function( data ) {
-		console.log("data", data);
 		// if there is no response, keep what we've got locally
 		if( _.isNull(data) ) return;
-        // add updated flag
+		// add updated flag
 		if( typeof data.updated == "undefined" ){
 			data.updated = ( new Date() ).getTime();
 		}
 		return data;
-	}, 
-	
+	},
+
 	sync: function(method, model, options) {
 		// fallbacks
 		options = options || {};
@@ -79,7 +82,7 @@ APP.Session = Backbone.Model.extend({
 		// intercept local store actions
 		switch(method){
 			case "read":
-				
+
 			break;
 			case "update":
 				//this.store.set("session", JSON.stringify( model.toJSON() ) );
@@ -87,9 +90,9 @@ APP.Session = Backbone.Model.extend({
 		}
 		// exit if explicitly noted as not calling a remote
 		if( !this.options["remote"] ) return this.update();
-		
+
 		return Backbone.sync.call(this, method, model, options);
-	}, 
+	},
 	update: function(){
 		// set a trigger
 		if( !this.state ) {
@@ -100,34 +103,36 @@ APP.Session = Backbone.Model.extend({
 		if( this.get("updated") ){
 			this.cache();
 		}
-	}, 
+	},
 	cache: function(){
-		console.log("CACHE!!!!", this.toJSON());
 		// update the local session
 		this.store.set("session", JSON.stringify( this.toJSON() ) );
 		// check if the object has changed locally
 		//...
-	}, 
+	},
 	// Destroy session - Source: http://backbonetutorials.com/cross-domain-sessions/
 	logout: function() {
 		// Do a DELETE to /session and clear the clientside data
 		var self = this;
+		// delete local version
+		this.store.clear("session");
+		// notify remote
 		this.destroy({
 			success: function (model, resp) {
-				model.clear()
+				model.clear();
 				model.id = null;
 				// Set auth to false to trigger a change:auth event
 				// The server also returns a new csrf token so that
 				// the user can relogin without refreshing the page
 				self.set({auth: false});
-				if(resp._csrf) self.set({_csrf: resp._csrf});
+				if( resp && resp._csrf) self.set({_csrf: resp._csrf});
 			}
 		});
 	},
-	// if data request fails request offline mode. 
+	// if data request fails request offline mode.
 	error: function( model, req, options, error ){
 		// consider redirecting based on statusCode
-		console.log( req );
+		console.log( model );
 	},
 	sessionStorage : {
 		get : function( name ) {
@@ -136,7 +141,7 @@ APP.Session = Backbone.Model.extend({
 		set : function( name, val ){
 			// validation first?
 			return sessionStorage.setItem( name, val );
-		}, 
+		},
 		check : function( name ){
 			return ( sessionStorage.getItem( name ) == null );
 		},
@@ -144,7 +149,7 @@ APP.Session = Backbone.Model.extend({
 			// actually just removing the session...
 			return sessionStorage.removeItem( name );
 		}
-	}, 
+	},
 	localStorage : {
 		get : function( name ) {
 			return localStorage.getItem( name );
@@ -152,7 +157,7 @@ APP.Session = Backbone.Model.extend({
 		set : function( name, val ){
 			// validation first?
 			return localStorage.setItem( name, val );
-		}, 
+		},
 		check : function( name ){
 			return ( localStorage.getItem( name ) == null );
 		},
@@ -160,7 +165,7 @@ APP.Session = Backbone.Model.extend({
 			// actually just removing the session...
 			return localStorage.removeItem( name );
 		}
-	}, 
+	},
 	cookie : {
 		get : function( name ) {
 			var i,key,value,cookies=document.cookie.split(";");
@@ -172,16 +177,16 @@ APP.Session = Backbone.Model.extend({
 					return unescape(value);
 				}
 			}
-		}, 
-		
+		},
+
 		set : function( name, val ){
 			// automatically expire session in a day
 			var expiry = 86400000;
 			var date = new Date( ( new Date() ).getTime() + parseInt(expiry) );
 			var value=escape(val) + ((expiry==null) ? "" : "; expires="+date.toUTCString());
 			document.cookie=name + "=" + value;
-		}, 
-		
+		},
+
 		check : function( name ){
 			var cookie=this.get( name );
 			if (cookie!=null && cookie!=""){
@@ -189,9 +194,14 @@ APP.Session = Backbone.Model.extend({
 			} else {
 				return false;
 			}
+		},
+
+		clear: function( name ) {
+			document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 		}
-		
 	}
 });
+
+	return window.APP = APP;
 
 })(window);
