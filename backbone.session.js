@@ -72,6 +72,8 @@ APP.Session = Backbone.Model.extend({
 		if( typeof data.updated == "undefined" ){
 			data.updated = ( new Date() ).getTime();
 		}
+		// add an id if one is not supplied
+		if( !data.id) data.id = this.generateUid();
 		return data;
 	},
 
@@ -134,6 +136,8 @@ APP.Session = Backbone.Model.extend({
 		// consider redirecting based on statusCode
 		console.log( model );
 	},
+
+	// Stores
 	sessionStorage : {
 		get : function( name ) {
 			return sessionStorage.getItem( name );
@@ -150,6 +154,7 @@ APP.Session = Backbone.Model.extend({
 			return sessionStorage.removeItem( name );
 		}
 	},
+
 	localStorage : {
 		get : function( name ) {
 			return localStorage.getItem( name );
@@ -166,6 +171,7 @@ APP.Session = Backbone.Model.extend({
 			return localStorage.removeItem( name );
 		}
 	},
+
 	cookie : {
 		get : function( name ) {
 			var i,key,value,cookies=document.cookie.split(";");
@@ -199,6 +205,19 @@ APP.Session = Backbone.Model.extend({
 		clear: function( name ) {
 			document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 		}
+	},
+
+	// Helpers
+	// - Creates a unique id for identification purposes
+	generateUid : function (separator) {
+
+		var delim = separator || "-";
+
+		function S4() {
+			return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+		}
+
+		return (S4() + S4() + delim + S4() + delim + S4() + delim + S4() + delim + S4() + S4() + S4());
 	}
 });
 
