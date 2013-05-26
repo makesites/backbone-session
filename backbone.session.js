@@ -15,8 +15,8 @@ var APP = (typeof window.APP == "undefined") ? {} : window.APP;
 APP.Session = Backbone.Model.extend({
 	url: function(){ return this.options.host + "/session" },
 	defaults : {
-		auth: false,
-		updated: false
+		auth: 0,
+		updated: 0
 	},
 	state: false,
 	options: {
@@ -55,7 +55,7 @@ APP.Session = Backbone.Model.extend({
 		} else {
 			this.set( JSON.parse( localSession ) );
 			// reset the updated flag
-			this.set({ updated : false });
+			this.set({ updated : 0 });
 			// sync with the server
 			this.save();
 		}
