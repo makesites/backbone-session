@@ -102,7 +102,7 @@ APP.Session = Backbone.Model.extend({
 			this.trigger("loaded");
 		};
 		// caching is triggered after every model update (fetch/set)
-		if( this.get("updated") ){
+		if( this.get("updated") || !this.options["remote"] ){
 			this.cache();
 		}
 	},
