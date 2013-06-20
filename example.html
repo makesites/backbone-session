@@ -1,0 +1,62 @@
+<!doctype html>
+<html><head>
+<meta charset="UTF-8">
+<title>Backbone Session - Example</title>
+
+</head>
+<body>
+
+	<h2>Session Output</h2>
+	<p>This example uses a static session feed found at example.session.json. In practice you'd use a remote service that serves dynamic authentication credentials.</p>
+	<p>The data returned from the service are stored in SessionStorage by default, and optionally can be more persisting using LocalStorage.</p>
+	<p>The role of APP.Session is to sync local data with the remote service on subsequent reloads, using a PUT request.</p>
+	<h3>Result:</h3>
+	<pre id="session-info">
+
+	</pre>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
+<script type="text/javascript" src="backbone.session.js"></script>
+<script type="text/javascript">
+
+// this is the container of the application
+var app = {};
+// load the session (with dummy data)
+app.session = new APP.Session(null, {
+	url: "./example.session.json"
+});
+
+
+
+// Helper
+
+// blueprint view for outputting session info
+var Info = Backbone.View.extend({
+	el: "#session-info",
+	initialize: function(){
+		//
+		_.bindAll(this, "render");
+		// check if the data is available
+		if( !_.isEmpty( this.model.toJSON() ) ){
+			this.render();
+		}
+		// re-render when the data updates
+		this.model.on( "change", this.render);
+		this.model.on( "sync", this.render);
+	},
+	render: function(){
+		// crude output
+		var data = JSON.stringify( this.model.toJSON() );
+		$( this.el).html( data );
+	}
+});
+
+// load a view
+var view = new Info({ model : app.session });
+
+</script>
+
+</body>
+</html>
