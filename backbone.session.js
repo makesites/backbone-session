@@ -134,7 +134,7 @@ APP.Session = Backbone.Model.extend({
 	// if data request fails request offline mode.
 	error: function( model, req, options, error ){
 		// consider redirecting based on statusCode
-		console.log( model );
+		console.log( req );
 	},
 
 	// Stores
