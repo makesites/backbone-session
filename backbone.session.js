@@ -5,14 +5,12 @@
  * Source: https://github.com/makesites/backbone-session
  *
  * Usage:
- *   this.session = new APP.Session();
+ *   this.session = new Backbone.Session();
  */
 
-(function(window) {
+(function(window, _, Backbone) {
 
-var APP = (typeof window.APP == "undefined") ? {} : window.APP;
-
-APP.Session = Backbone.Model.extend({
+var Session = Backbone.Model.extend({
 	url: function(){ return this.options.host + "/session" },
 	defaults : {
 		auth: 0,
@@ -221,6 +219,15 @@ APP.Session = Backbone.Model.extend({
 	}
 });
 
-	return window.APP = APP;
+	// reference in the Backbone namespace
+	if( _.isUndefined( Backbone.Session) ){
+		Backbone.Session = Session;
+	}
 
-})(window);
+	// reference in the APP namespace
+	if( typeof APP != "undefined" && _.isUndefined( APP.Session) ){
+		APP.Session = Session;
+	}
+
+
+})(window, this._, this.Backbone);
