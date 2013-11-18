@@ -24,7 +24,7 @@ var Session = Backbone.Model.extend({
 		host: ""
 	},
 	initialize: function( model, options ){
-		_.bindAll(this);
+		_.bindAll(this, "logout", "cache", "update");
 		// default vars
 		options = options || {};
 		// parse options
