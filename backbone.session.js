@@ -61,6 +61,7 @@ var Session = Backbone.Model.extend({
 		// event binders
 		this.bind("change",this.update);
 		this.bind("error", this.error);
+		this.on("logout", this.logout);
 	},
 
 	parse: function( data ) {
