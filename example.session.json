@@ -1,5 +1,5 @@
 {
-  "auth": 1,
-  "name": "MyName",
-  "email": "myname@mydomain.com"
+	"auth": 1,
+	"name": "MyName",
+	"email": "myname@mydomain.com"
 }
