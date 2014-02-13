@@ -119,6 +119,7 @@ var Session = Backbone.Model.extend({
 		this.store.clear("session");
 		// notify remote
 		this.destroy({
+			wait: true,
 			success: function (model, resp) {
 				model.clear();
 				model.id = null;
