@@ -112,9 +112,10 @@ var Session = Backbone.Model.extend({
 		//...
 	},
 	// Destroy session - Source: http://backbonetutorials.com/cross-domain-sessions/
-	logout: function() {
+	logout: function( options ) {
 		// Do a DELETE to /session and clear the clientside data
 		var self = this;
+		options = options || {};
 		// delete local version
 		this.store.clear("session");
 		// notify remote
@@ -128,6 +129,10 @@ var Session = Backbone.Model.extend({
 				// the user can relogin without refreshing the page
 				self.set({auth: false});
 				if( resp && resp._csrf) self.set({_csrf: resp._csrf});
+				// reload the page if needed
+				if( options.reload ){
+					window.location.reload();
+				}
 			}
 		});
 	},
