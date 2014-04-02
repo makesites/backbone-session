@@ -8,7 +8,10 @@
  *   this.session = new Backbone.Session();
  */
 
-(function(window, _, Backbone) {
+(function(window, _, Backbone, APP) {
+
+	// support for Backbone APP() view if available...
+	var isAPP = ( typeof APP !== "undefined" && typeof APP.View !== "undefined" );
 
 var Session = Backbone.Model.extend({
 	url: function(){ return this.options.host + "/session" },
@@ -226,15 +229,34 @@ var Session = Backbone.Model.extend({
 	}
 });
 
+
+	// fallbacks
 	// reference in the Backbone namespace
 	if( _.isUndefined( Backbone.Session) ){
 		Backbone.Session = Session;
 	}
 
-	// reference in the APP namespace
-	if( typeof APP != "undefined" && _.isUndefined( APP.Session) ){
-		APP.Session = Session;
+	// Support module loaders
+	if ( typeof module === "object" && module && typeof module.exports === "object" ) {
+		// Expose as module.exports in loaders that implement CommonJS module pattern.
+		module.exports = Session;
+	} else {
+		// Register as a named AMD module, used in Require.js
+		if ( typeof define === "function" && define.amd ) {
+			define( [], function () { return Session; } );
+		}
+	}
+	// If there is a window object, that at least has a document property
+	if ( typeof window === "object" && typeof window.document === "object" ) {
+		// update APP namespace
+		if( isAPP ){
+			APP.Session = Session;
+			// save namespace
+			window.APP = APP;
+		}
+		// save Backbone namespace either way
+		window.Backbone = Backbone;
 	}
 
 
-})(window, this._, this.Backbone);
+})(this.window, this._, this.Backbone, this.APP);
