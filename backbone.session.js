@@ -8,8 +8,20 @@
  *   this.session = new Backbone.Session();
  */
 
-(function(window, _, Backbone, APP) {
+(function (lib) {
 
+	//"use strict";
+
+	if (typeof define === 'function' && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(['underscore', 'backbone'], lib);
+	} else {
+		// Browser globals
+		lib(_, Backbone);
+	}
+}(function (_, Backbone) {
+
+	var APP = window.APP;
 	// support for Backbone APP() view if available...
 	var isAPP = ( typeof APP !== "undefined" && typeof APP.View !== "undefined" );
 
@@ -242,9 +254,9 @@ var Session = Backbone.Model.extend({
 		module.exports = Session;
 	} else {
 		// Register as a named AMD module, used in Require.js
-		if ( typeof define === "function" && define.amd ) {
-			define( [], function () { return Session; } );
-		}
+		//if ( typeof define === "function" && define.amd ) {
+		//	define( [], function () { return Session; } );
+		//}
 	}
 	// If there is a window object, that at least has a document property
 	if ( typeof window === "object" && typeof window.document === "object" ) {
@@ -259,4 +271,4 @@ var Session = Backbone.Model.extend({
 	}
 
 
-})(this.window, this._, this.Backbone, this.APP);
+}));
