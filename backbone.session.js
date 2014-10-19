@@ -1,24 +1,29 @@
-/* **Session**
- * _Uniform session support for Backbone.js apps_
- *
- * Created by Makis Tracend ( @tracend )
+/*
+ * Backbone Session
  * Source: https://github.com/makesites/backbone-session
+ * Copyright © Makesites.org
  *
- * Usage:
- *   this.session = new Backbone.Session();
+ * Initiated by Makis Tracend (@tracend)
+ * Distributed through [Makesites.org](http://makesites.org)
+ * Released under the [MIT license](http://makesites.org/licenses/MIT)
  */
 
 (function (lib) {
 
 	//"use strict";
 
+	// Support module loaders
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
 		define(['underscore', 'backbone'], lib);
+	} else if ( typeof module === "object" && module && typeof module.exports === "object" ){
+		// Expose as module.exports in loaders that implement CommonJS module pattern.
+		module.exports = lib;
 	} else {
 		// Browser globals
-		lib(_, Backbone);
+		lib(window._, window.Backbone);
 	}
+
 }(function (_, Backbone) {
 
 	var APP = window.APP;
@@ -248,16 +253,6 @@ var Session = Backbone.Model.extend({
 		Backbone.Session = Session;
 	}
 
-	// Support module loaders
-	if ( typeof module === "object" && module && typeof module.exports === "object" ) {
-		// Expose as module.exports in loaders that implement CommonJS module pattern.
-		module.exports = Session;
-	} else {
-		// Register as a named AMD module, used in Require.js
-		//if ( typeof define === "function" && define.amd ) {
-		//	define( [], function () { return Session; } );
-		//}
-	}
 	// If there is a window object, that at least has a document property
 	if ( typeof window === "object" && typeof window.document === "object" ) {
 		// update APP namespace
@@ -269,6 +264,9 @@ var Session = Backbone.Model.extend({
 		// save Backbone namespace either way
 		window.Backbone = Backbone;
 	}
+
+	// for module loaders:
+	return Session;
 
 
 }));
