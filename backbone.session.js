@@ -15,7 +15,7 @@
 	// Support module loaders
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
-		define(['underscore', 'backbone'], lib);
+		define('backbone.session', ['underscore', 'backbone'], lib);
 	} else if ( typeof module === "object" && module && typeof module.exports === "object" ){
 		// Expose as module.exports in loaders that implement CommonJS module pattern.
 		module.exports = lib;
@@ -38,6 +38,7 @@ var Session = Backbone.Model.extend({
 	},
 	state: false,
 	options: {
+		broadcast: true,
 		local: true,
 		remote: true,
 		persist: false,
@@ -74,8 +75,8 @@ var Session = Backbone.Model.extend({
 			this.set( JSON.parse( localSession ) );
 			// reset the updated flag
 			this.set({ updated : 0 });
-			// sync with the server
-			this.save();
+			// sync with the server ( if broadcasting local info )
+			if( this.options.broadcast ) this.save();
 		}
 
 		// event binders
@@ -110,7 +111,7 @@ var Session = Backbone.Model.extend({
 			break;
 		}
 		// exit if explicitly noted as not calling a remote
-		if( !this.options["remote"] ) return this.update();
+		if( !this.options["remote"] || (!this.options["broadcast"] && method != "read") ) return this.update();
 
 		return Backbone.sync.call(this, method, model, options);
 	},
