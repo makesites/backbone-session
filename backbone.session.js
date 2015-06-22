@@ -75,6 +75,8 @@ var Session = Backbone.Model.extend({
 			this.set( JSON.parse( localSession ) );
 			// reset the updated flag
 			this.set({ updated : 0 });
+			// fetch if not authenticated (every time)
+			if( !this.get('auth') && this.options.remote ) this.fetch();
 			// sync with the server ( if broadcasting local info )
 			if( this.options.broadcast ) this.save();
 		}
