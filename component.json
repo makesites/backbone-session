@@ -2,5 +2,5 @@
 	"name": "backbone.session",
 	"version": "0.6.2",
 	"main": ["./backbone.session.js"],
-	"dependencies": { "backbone", "underscore", "backbone.app" }
+	"dependencies": [ "backbone", "underscore", "backbone.app" ]
 }
