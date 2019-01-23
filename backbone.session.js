@@ -68,7 +68,7 @@ var Session = Backbone.Model.extend({
 		// try loading the session
 		var localSession = this.store.get("session");
 		//
-		if( _.isNull(localSession) ){
+		if( _.isNull(localSession) || !this.options.local ){
 			// - no valid local session, try the server
 			this.fetch();
 		} else {
